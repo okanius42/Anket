@@ -1,0 +1,46 @@
+{
+  "project_info": {
+    "project_number": "191387731381",
+    "project_id": "survey-edc5a",
+    "storage_bucket": "survey-edc5a.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:191387731381:android:a3e00ade817e234a0c05fc",
+        "android_client_info": {
+          "package_name": "com.example.survey"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "191387731381-ce6nmvo779dp1c6grvdio7n84s5bn8m6.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyAJDnUDWbo4OAg3wh2vvoBk5vbAI7TUBj8"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "191387731381-ce6nmvo779dp1c6grvdio7n84s5bn8m6.apps.googleusercontent.com",
+              "client_type": 3
+            },
+            {
+              "client_id": "191387731381-4gutsqvl9a6mlfm1i9av9p6gnmmsqhmq.apps.googleusercontent.com",
+              "client_type": 2,
+              "ios_info": {
+                "bundle_id": "com.example.login"
+              }
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
