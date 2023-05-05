@@ -22,13 +22,15 @@ class FirestoreService {
     return surveyAdd;
   }
 
-  Future<void> userUpdate(DateTime birthday, String name, String surname) {
+  Future<void> userUpdate(
+      DateTime birthday, int age, String name, String surname) {
     final User? user = _firebaseAuth.currentUser;
     final email = user?.email;
     var ref = _firebaseFirestore.collection("Users").doc(email).update({
       'year': birthday.year,
       'month': birthday.month,
       'day': birthday.day,
+      'age': age,
       'name': name,
       'surname': surname
     });
@@ -57,5 +59,37 @@ class FirestoreService {
     final User? user = _firebaseAuth.currentUser;
     final email = user?.email;
     return email;
+  }
+}
+
+class StatsService {
+  final CollectionReference _surveyReference =
+      FirebaseFirestore.instance.collection("Surveys");
+  getSurveyData() async {
+    QuerySnapshot querySnapshot = await _surveyReference.get();
+    final allData =
+        querySnapshot.docs.map((e) => e.data()).toList(growable: true);
+    int i = allData.length;
+    return i;
+  }
+
+  final CollectionReference _answerReference =
+      FirebaseFirestore.instance.collection("Answers");
+  getAnswerData() async {
+    QuerySnapshot querySnapshot = await _answerReference.get();
+    final allData =
+        querySnapshot.docs.map((e) => e.data()).toList(growable: true);
+    int i = allData.length;
+    return i;
+  }
+
+  final CollectionReference _usersReference =
+      FirebaseFirestore.instance.collection("Users");
+  getUserData() async {
+    QuerySnapshot querySnapshot = await _usersReference.get();
+    final allData =
+        querySnapshot.docs.map((e) => e.data()).toList(growable: true);
+    int i = allData.length;
+    return i;
   }
 }

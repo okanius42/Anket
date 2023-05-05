@@ -1,4 +1,6 @@
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
+import 'package:survey/Services/Firestore_services.dart';
 
 import 'Services/Auth_Services.dart';
 import 'asdasd.dart';
@@ -13,19 +15,39 @@ import 'pages/Survey/Surveys.dart';
 class drawerBuild extends StatelessWidget {
   drawerBuild({super.key});
   AuthService _authService = AuthService();
-
+  FirestoreService _firestoreService = FirestoreService();
   @override
   Widget build(BuildContext context) {
     return Drawer(
       child: ListView(
         padding: EdgeInsets.zero,
         children: <Widget>[
-          const UserAccountsDrawerHeader(
-            decoration: BoxDecoration(color: Colors.black),
-            accountName: Text('accountUsername: Account Username'),
-            accountEmail: Text('accountEmail: Account Email'),
-            currentAccountPicture: CircleAvatar(backgroundColor: Colors.blue),
+          UserAccountsDrawerHeader(
+            accountName: StreamBuilder<DocumentSnapshot>(
+                stream: _firestoreService.FieldStream(),
+                builder: (BuildContext context,
+                    AsyncSnapshot<DocumentSnapshot> snapshot) {
+                  if (snapshot.hasError) {
+                    return const Text(
+                      'Something went wrong',
+                      style: TextStyle(color: Colors.black),
+                    );
+                  }
+                  if (snapshot.connectionState == ConnectionState.waiting) {
+                    return const Text("Loading",
+                        style: TextStyle(color: Colors.black));
+                  }
+                  Map<String, dynamic> data =
+                      snapshot.data!.data()! as Map<String, dynamic>;
+                  return Text(data['username'],
+                      style: const TextStyle(color: Colors.black));
+                }),
+            accountEmail: Text(_firestoreService.getEmail().toString(),
+                style: const TextStyle(color: Colors.black)),
+            currentAccountPicture:
+                const CircleAvatar(backgroundColor: Colors.blue),
           ),
+          const Divider(color: Colors.black),
           ListTile(
             title: const Text('Home'),
             leading: const Icon(Icons.home),
@@ -73,8 +95,10 @@ class drawerBuild extends StatelessWidget {
             title: const Text('Settings'),
             leading: const Icon(Icons.settings),
             onTap: () {
-              Navigator.push(context,
-                  MaterialPageRoute(builder: (context) => const Settings()));
+              Navigator.push(
+                  context,
+                  MaterialPageRoute(
+                      builder: (context) => const SettingsPage()));
             },
           ),
           ListTile(

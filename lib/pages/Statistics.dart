@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:survey/Services/Firestore_services.dart';
 
 import '../Drawer.dart';
 
@@ -10,6 +11,7 @@ class Statistics extends StatefulWidget {
 }
 
 class _StatisticsState extends State<Statistics> {
+  StatsService _statsService = StatsService();
   @override
   Widget build(BuildContext context) {
     List<String> stats = [
@@ -18,7 +20,24 @@ class _StatisticsState extends State<Statistics> {
       'Kulllanıcı Sayısı',
       'Günlük Cevaplama Sayısı'
     ];
-    List<int> amounts = [5, 3, 2, 1];
+    List<Widget> _widgetList = [
+      FutureBuilder(
+          future: _statsService.getSurveyData(),
+          builder: (context, snapshot) {
+            return Text(snapshot.data.toString());
+          }),
+      FutureBuilder(
+          future: _statsService.getAnswerData(),
+          builder: (context, snapshot) {
+            return Text(snapshot.data.toString());
+          }),
+      FutureBuilder(
+          future: _statsService.getUserData(),
+          builder: (context, snapshot) {
+            return Text(snapshot.data.toString());
+          }),
+      Text('5')
+    ];
 
     var size = MediaQuery.of(context).size;
     var height =
@@ -54,7 +73,7 @@ class _StatisticsState extends State<Statistics> {
                           SizedBox(
                             height: height * .01,
                           ),
-                          Text(amounts.elementAt(index).toString())
+                          _widgetList.elementAt(index)
                         ],
                       ),
                     );

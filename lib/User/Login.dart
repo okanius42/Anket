@@ -1,3 +1,4 @@
+import 'package:email_validator/email_validator.dart';
 import 'package:flutter/material.dart';
 import 'package:survey/pages/Profile.dart';
 
@@ -38,35 +39,41 @@ class _LoginPageState extends State<LoginPage> {
                     SizedBox(
                       height: size.height * .01433823502,
                     ),
-                    TextField(
-                        controller: _emailController,
-                        style: const TextStyle(
+                    TextFormField(
+                      controller: _emailController,
+                      style: const TextStyle(
+                        color: Colors.black,
+                      ),
+                      cursorColor: Colors.black,
+                      keyboardType: TextInputType.emailAddress,
+                      decoration: const InputDecoration(
+                        prefixIcon: Icon(
+                          Icons.mail,
                           color: Colors.black,
                         ),
-                        cursorColor: Colors.black,
-                        keyboardType: TextInputType.emailAddress,
-                        decoration: const InputDecoration(
-                          prefixIcon: Icon(
-                            Icons.mail,
-                            color: Colors.black,
-                          ),
-                          hintText: 'E-Mail',
-                          prefixText: ' ',
-                          hintStyle: TextStyle(color: Colors.black),
-                          focusColor: Colors.black,
-                          focusedBorder: UnderlineInputBorder(
-                              borderSide: BorderSide(
-                            color: Colors.black,
-                          )),
-                          enabledBorder: UnderlineInputBorder(
-                              borderSide: BorderSide(
-                            color: Colors.black,
-                          )),
+                        hintText: 'E-Mail',
+                        prefixText: ' ',
+                        hintStyle: TextStyle(color: Colors.black),
+                        focusColor: Colors.black,
+                        focusedBorder: UnderlineInputBorder(
+                            borderSide: BorderSide(
+                          color: Colors.black,
                         )),
+                        enabledBorder: UnderlineInputBorder(
+                            borderSide: BorderSide(
+                          color: Colors.black,
+                        )),
+                      ),
+                      autovalidateMode: AutovalidateMode.onUserInteraction,
+                      validator: (email) =>
+                          email != null && EmailValidator.validate(email)
+                              ? null
+                              : 'Enter a valid email',
+                    ),
                     SizedBox(
                       height: size.height * .02205882311,
                     ),
-                    TextField(
+                    TextFormField(
                       style: const TextStyle(
                         color: Colors.black,
                       ),
@@ -95,12 +102,17 @@ class _LoginPageState extends State<LoginPage> {
                           ),
                         ),
                       ),
+                      autovalidateMode: AutovalidateMode.onUserInteraction,
+                      validator: (value) => value != null && value.length < 6
+                          ? 'Enter min 6.characters'
+                          : null,
                     ),
                     SizedBox(
                       height: size.height * .03308823467,
                     ),
                     InkWell(
                       onTap: () {
+                        FocusManager.instance.primaryFocus?.unfocus();
                         _authService
                             .signIN(
                                 _emailController.text, _passwordController.text)
