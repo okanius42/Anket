@@ -9,8 +9,6 @@ Android ve IOS işletim sistemlerine sahip telefonlarda mağazaya yüklemek üze
 5- Kullanıcı bilgileri güvenlik amacıyla veritabanında tutulacaktır ve bu bilgiler kesinlikle paylaşılmayacaktır.
 6- Uygulamaya üye olmuş her kullanıcı daha önce eklenmiş olan anketlerin sonuçlarına erişebilecektir ve bu anketlere katılabilecektir.
 
-=======
-# Anket  
 
 
 
