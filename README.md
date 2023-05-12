@@ -1,4 +1,4 @@
-<<<<<<< HEAD
+
 # Anket
 
 Android ve IOS işletim sistemlerine sahip telefonlarda mağazaya yüklemek üzere geliştirdiğim Anket adlı uygulamam.
