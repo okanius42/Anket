@@ -20,10 +20,16 @@ class _AddChoiceState extends State<AddChoice> {
   final TextEditingController _textEditingController = TextEditingController();
 
   List<String> surveyList = [];
+  List<int> numbers = [];
   void add() {
     setState(() {
       surveyList.remove(_textEditingController.text);
       surveyList.add(_textEditingController.text);
+      numbers.add(0);
+      while (surveyList.length == (numbers.length - 1)) {
+        numbers.removeAt((numbers.length) - 1);
+      }
+      print('Numbers list = $numbers');
     });
   }
 
@@ -40,6 +46,9 @@ class _AddChoiceState extends State<AddChoice> {
   void delete(String name) {
     setState(() {
       surveyList.remove(name);
+      int length = numbers.length;
+      numbers.removeAt(length - 1);
+      print('Numbers list = $numbers');
     });
   }
 
@@ -170,9 +179,10 @@ class _AddChoiceState extends State<AddChoice> {
                           MaterialPageRoute(
                               builder: (context) => CheckSurvey(
                                     names: surveyList,
-                                    label: widget.topic,
+                                    numbers: numbers,
+                                    topic: widget.topic,
                                     explain: widget.explain,
-                                    val: widget.val,
+                                    check: widget.val,
                                   )));
                     });
                   },

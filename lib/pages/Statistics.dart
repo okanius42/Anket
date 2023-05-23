@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
-import 'package:survey/Services/Firestore_services.dart';
 
 import '../Drawer.dart';
+import '../Services/FirestoreServices/stats_services.dart';
 
 class Statistics extends StatefulWidget {
   const Statistics({Key? key}) : super(key: key);
@@ -11,7 +11,7 @@ class Statistics extends StatefulWidget {
 }
 
 class _StatisticsState extends State<Statistics> {
-  StatsService _statsService = StatsService();
+  StatsService statsService = StatsService();
   @override
   Widget build(BuildContext context) {
     List<String> stats = [
@@ -22,17 +22,17 @@ class _StatisticsState extends State<Statistics> {
     ];
     List<Widget> _widgetList = [
       FutureBuilder(
-          future: _statsService.getSurveyData(),
+          future: statsService.getSurveyStats(),
           builder: (context, snapshot) {
             return Text(snapshot.data.toString());
           }),
       FutureBuilder(
-          future: _statsService.getAnswerData(),
+          future: statsService.getAnswerStats(),
           builder: (context, snapshot) {
             return Text(snapshot.data.toString());
           }),
       FutureBuilder(
-          future: _statsService.getUserData(),
+          future: statsService.getUserStats(),
           builder: (context, snapshot) {
             return Text(snapshot.data.toString());
           }),

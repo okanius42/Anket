@@ -1,29 +1,36 @@
 import 'package:flutter/material.dart';
-import 'package:survey/Services/Firestore_services.dart';
+import 'package:survey/Services/FirestoreServices/answer_services.dart';
 import 'package:survey/pages/Survey/AddASurvey.dart';
+
+import '../../Services/FirestoreServices/survey_services.dart';
 
 class CheckSurvey extends StatefulWidget {
   final List<String> names;
-  final String label;
+  final List<int> numbers;
+  final String topic;
   final String explain;
-  final bool val;
+  final bool check;
   const CheckSurvey(
       {super.key,
       required this.names,
-      required this.label,
+      required this.numbers,
+      required this.topic,
       required this.explain,
-      required this.val});
+      required this.check});
 
   @override
   State<CheckSurvey> createState() => _CheckSurveyState();
 }
 
 class _CheckSurveyState extends State<CheckSurvey> {
-  bool isCheck = false;
+  final SurveyService surveyService = SurveyService();
   final ScrollController _scrollController = ScrollController();
-  final FirestoreService _firestoreService = FirestoreService();
+  AnswerService answerService = AnswerService();
   @override
   Widget build(BuildContext context) {
+    List list = List.generate(widget.names.length,
+        (index) => {"title": widget.names[index], "number": 0, "value": false});
+
     var size = MediaQuery.of(context).size;
     return Scaffold(
       body: Padding(
@@ -42,7 +49,7 @@ class _CheckSurveyState extends State<CheckSurvey> {
                     height: size.height * .06,
                   ),
                   Text(
-                    widget.label,
+                    widget.topic,
                     style: const TextStyle(
                         fontSize: 32,
                         fontStyle: FontStyle.italic,
@@ -98,38 +105,40 @@ class _CheckSurveyState extends State<CheckSurvey> {
                       child: SizedBox(
                         height: size.height * .58,
                         width: size.width * .9,
-                        child: Scrollbar(
-                          controller: _scrollController,
-                          thumbVisibility: true,
-                          child: ListView.builder(
-                            controller: _scrollController,
-                            shrinkWrap: true,
-                            itemCount: widget.names.length,
-                            itemBuilder: (BuildContext context, int index) {
-                              return Card(
-                                shape: BeveledRectangleBorder(
-                                    side: BorderSide(
-                                      color: Colors.black.withOpacity(.5),
-                                    ),
-                                    borderRadius: const BorderRadius.all(
-                                      Radius.circular(15.0),
-                                    )),
-                                child: Padding(
-                                  padding: EdgeInsets.only(
-                                      left: size.width * .03180555533),
-                                  child: Row(
-                                    children: [
-                                      SizedBox(
-                                          width: size.width * .75,
-                                          child: Text(
-                                              widget.names.elementAt(index))),
-                                    ],
+                        child: StatefulBuilder(builder:
+                            (BuildContext context, StateSetter setState) {
+                          return Column(
+                            children: List.generate(
+                              list.length,
+                              (index) {
+                                return CheckboxListTile(
+                                  controlAffinity:
+                                      ListTileControlAffinity.leading,
+                                  contentPadding: EdgeInsets.zero,
+                                  dense: true,
+                                  title: Text(
+                                    list[index]["title"],
+                                    style: const TextStyle(fontSize: 16),
                                   ),
-                                ),
-                              );
-                            },
-                          ),
-                        ),
+                                  value: list[index]["value"],
+                                  onChanged: (value) {
+                                    setState(() {
+                                      if (!widget.check) {
+                                        for (var element in list) {
+                                          element["value"] = false;
+                                        }
+                                        list[index]["value"] = value;
+                                      } else {
+                                        list[index]["value"] = value;
+                                      }
+                                      print('List of List $list');
+                                    });
+                                  },
+                                );
+                              },
+                            ),
+                          );
+                        }),
                       ),
                     ),
                   ),
@@ -176,9 +185,10 @@ class _CheckSurveyState extends State<CheckSurvey> {
                   ),
                   InkWell(
                     onTap: () {
-                      _firestoreService
-                          .surveyAdd(widget.val, widget.label, widget.explain,
-                              widget.names)
+                      surveyService.uploadAnswer(list);
+                      surveyService
+                          .addSurvey(
+                              widget.check, widget.topic, widget.explain, list)
                           .then((value) => Navigator.push(
                               context,
                               MaterialPageRoute(
@@ -210,7 +220,7 @@ class _CheckSurveyState extends State<CheckSurvey> {
                       ),
                     ),
                   ),
-                  widget.val ? const Text('True') : const Text('False')
+                  widget.check ? const Text('True') : const Text('False')
                 ],
               ),
             ),

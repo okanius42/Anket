@@ -39,6 +39,13 @@ class MyApp extends StatelessWidget {
       debugShowCheckedModeBanner: false,
       title: 'Survey',
       theme: ThemeData(
+        textSelectionTheme: TextSelectionThemeData(
+            cursorColor: Colors.black,
+            selectionColor: Colors.blue,
+            selectionHandleColor: Colors.black),
+        appBarTheme: AppBarTheme(
+            iconTheme: IconThemeData(color: Colors.black), color: Colors.white),
+        visualDensity: VisualDensity.adaptivePlatformDensity,
         colorScheme: const ColorScheme(
             brightness: Brightness.light,
             primary: Colors.white,
@@ -51,7 +58,6 @@ class MyApp extends StatelessWidget {
             onBackground: Colors.black,
             surface: Colors.white,
             onSurface: Colors.black),
-        visualDensity: VisualDensity.adaptivePlatformDensity,
       ),
       home: user == null ? LoginPage() : const Profile(),
     );

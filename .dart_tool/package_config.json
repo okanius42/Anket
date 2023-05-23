@@ -146,6 +146,12 @@
       "languageVersion": "2.17"
     },
     {
+      "name": "flutter_cupertino_date_picker",
+      "rootUri": "file:///C:/Users/lenovo/AppData/Local/Pub/Cache/hosted/pub.dev/flutter_cupertino_date_picker-1.0.26+2",
+      "packageUri": "lib/",
+      "languageVersion": "1.19"
+    },
+    {
       "name": "flutter_lints",
       "rootUri": "file:///C:/Users/lenovo/AppData/Local/Pub/Cache/hosted/pub.dev/flutter_lints-2.0.1",
       "packageUri": "lib/",
@@ -362,7 +368,7 @@
       "languageVersion": "2.19"
     }
   ],
-  "generated": "2023-05-04T14:51:42.534632Z",
+  "generated": "2023-05-11T14:12:23.720508Z",
   "generator": "pub",
-  "generatorVersion": "2.19.4"
+  "generatorVersion": "2.19.6"
 }

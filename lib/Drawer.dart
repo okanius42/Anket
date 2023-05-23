@@ -1,21 +1,20 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
-import 'package:survey/Services/Firestore_services.dart';
 
 import 'Services/Auth_Services.dart';
+import 'Services/FirestoreServices/user_services.dart';
 import 'asdasd.dart';
-import 'pages/About.dart';
 import 'pages/Home.dart';
 import 'pages/Profile.dart';
-import 'pages/Settings.dart';
+import 'pages/Settings/Settings.dart';
 import 'pages/Statistics.dart';
 import 'pages/Survey/AddASurvey.dart';
 import 'pages/Survey/Surveys.dart';
 
 class drawerBuild extends StatelessWidget {
   drawerBuild({super.key});
-  AuthService _authService = AuthService();
-  FirestoreService _firestoreService = FirestoreService();
+  AuthService authService = AuthService();
+  UserService userService = UserService();
   @override
   Widget build(BuildContext context) {
     return Drawer(
@@ -24,7 +23,7 @@ class drawerBuild extends StatelessWidget {
         children: <Widget>[
           UserAccountsDrawerHeader(
             accountName: StreamBuilder<DocumentSnapshot>(
-                stream: _firestoreService.FieldStream(),
+                stream: userService.getUserInfo(),
                 builder: (BuildContext context,
                     AsyncSnapshot<DocumentSnapshot> snapshot) {
                   if (snapshot.hasError) {
@@ -42,7 +41,7 @@ class drawerBuild extends StatelessWidget {
                   return Text(data['username'],
                       style: const TextStyle(color: Colors.black));
                 }),
-            accountEmail: Text(_firestoreService.getEmail().toString(),
+            accountEmail: Text(userService.getEmail().toString(),
                 style: const TextStyle(color: Colors.black)),
             currentAccountPicture:
                 const CircleAvatar(backgroundColor: Colors.blue),
@@ -102,22 +101,14 @@ class drawerBuild extends StatelessWidget {
             },
           ),
           ListTile(
-            title: const Text('About'),
-            leading: const Icon(Icons.explicit),
-            onTap: () {
-              Navigator.push(context,
-                  MaterialPageRoute(builder: (context) => const About()));
-            },
-          ),
-          ListTile(
             title: const Text('Log out'),
             leading: const Icon(Icons.logout),
             onTap: () {
-              _authService.signOut(context);
+              authService.signOut(context);
             },
           ),
           ListTile(
-            title: const Text('asdasd'),
+            title: const Text('Try Page'),
             leading: const Icon(Icons.traffic_sharp),
             onTap: () {
               Navigator.push(context,

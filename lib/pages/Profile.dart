@@ -2,11 +2,11 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:survey/Services/Auth_Services.dart';
-import 'package:survey/Services/Firestore_services.dart';
-import 'package:survey/User/Login.dart';
+import 'package:survey/Services/FirestoreServices/user_services.dart';
+import 'package:survey/Services/FirestoreServices/user_survey_services.dart';
+import 'package:survey/pages/Settings/Settings.dart';
 
 import '../Drawer.dart';
-import '../User/Register.dart';
 
 class Profile extends StatefulWidget {
   const Profile({Key? key}) : super(key: key);
@@ -18,39 +18,123 @@ class Profile extends StatefulWidget {
 class _ProfileState extends State<Profile> {
   final ScrollController _scrollController = ScrollController();
   final FirebaseAuth _firebaseAuth = FirebaseAuth.instance;
-  int anket = 5;
-  int cevap = 8;
+  int surveyAmount = 5;
+  int answerAmount = 8;
   String topic = '';
   String explain = '';
   int _selectedIndex = 0;
-  AuthService _authService = AuthService();
-  FirestoreService _firestoreService = FirestoreService();
-
-  static final List<Widget> _widgetOptions = <Widget>[
-    Column(
-      crossAxisAlignment: CrossAxisAlignment.start,
-      children: const [
-        Text('Anket'),
-        Text("Bu bir ankettir."),
-      ],
-    ),
-    Column(
-      crossAxisAlignment: CrossAxisAlignment.start,
-      children: const [
-        Text('Cevap'),
-        Text("Bu bir cevaplanmış ankettir"),
-      ],
-    ),
-  ];
+  AuthService authService = AuthService();
+  UserService userService = UserService();
+  UserSurveyServices userSurveyServices = UserSurveyServices();
 
   @override
   Widget build(BuildContext context) {
     var size = MediaQuery.of(context).size;
     var height =
         size.height - (MediaQuery.of(context).padding.top + kToolbarHeight);
+    final List<Widget> _widgetOptions = <Widget>[
+      SizedBox(
+        width: size.width * .95,
+        child: FutureBuilder(
+          future: userSurveyServices.getSurveyList(),
+          builder: (context, snapshot) {
+            List<Map<String, dynamic>>? surveyList = snapshot.data;
+            return !snapshot.hasData
+                ? Center(
+                    child: SizedBox(
+                      width: size.width * .25,
+                      height: height * .125,
+                      child: const CircularProgressIndicator(
+                        color: Colors.black,
+                      ),
+                    ),
+                  )
+                : Scrollbar(
+                    thumbVisibility: true,
+                    controller: _scrollController,
+                    child: ListView.builder(
+                      itemCount: surveyList!.length,
+                      controller: _scrollController,
+                      shrinkWrap: true,
+                      itemBuilder: (ctx, index) {
+                        return Card(
+                          child: Padding(
+                            padding: EdgeInsets.only(bottom: height * .01),
+                            child: InkWell(
+                              onTap: () {},
+                              child: SizedBox(
+                                width: size.width * .9,
+                                height: height * .05,
+                                child: Center(
+                                  child: Text(surveyList![index]['Topic']),
+                                ),
+                              ),
+                            ),
+                          ),
+                        );
+                      },
+                    ),
+                  );
+          },
+        ),
+      ),
+      FutureBuilder(
+        future: userSurveyServices.getAnswerList(),
+        builder: (context, snapshot) {
+          List<Map<String, dynamic>>? surveyList = snapshot.data;
+
+          return !snapshot.hasData
+              ? Center(
+                  child: SizedBox(
+                    width: size.width * .25,
+                    height: height * .125,
+                    child: const CircularProgressIndicator(
+                      color: Colors.black,
+                    ),
+                  ),
+                )
+              : Scrollbar(
+                  thumbVisibility: true,
+                  controller: _scrollController,
+                  child: ListView.builder(
+                    itemCount: surveyList!.length,
+                    controller: _scrollController,
+                    shrinkWrap: true,
+                    itemBuilder: (ctx, index) {
+                      return Card(
+                        child: Padding(
+                          padding: EdgeInsets.only(bottom: height * .01),
+                          child: InkWell(
+                            onTap: () {},
+                            child: SizedBox(
+                              width: size.width * .9,
+                              height: height * .05,
+                              child: Center(
+                                child: Text(surveyList![index]['Topic']),
+                              ),
+                            ),
+                          ),
+                        ),
+                      );
+                    },
+                  ),
+                );
+        },
+      )
+    ];
+
     return Scaffold(
       appBar: AppBar(
-        actions: [IconButton(onPressed: null, icon: Icon(Icons.settings))],
+        actions: [
+          IconButton(
+              onPressed: () {
+                Navigator.push(
+                    context,
+                    MaterialPageRoute(
+                        builder: (context) => const SettingsPage()));
+              },
+              icon: const Icon(Icons.settings))
+        ],
       ),
       body: Center(
         child: Column(
@@ -72,7 +156,7 @@ class _ProfileState extends State<Profile> {
                       margin: EdgeInsets.only(left: size.width * .04722222133),
                       width: size.width * .66111109874,
                       child: StreamBuilder<DocumentSnapshot>(
-                        stream: _firestoreService.FieldStream(),
+                        stream: userService.getUserInfo(),
                         builder: (BuildContext context,
                             AsyncSnapshot<DocumentSnapshot> snapshot) {
                           if (snapshot.hasError) {
@@ -83,7 +167,7 @@ class _ProfileState extends State<Profile> {
                             return const Text("Loading");
                           }
                           Map<String, dynamic> data =
-                              snapshot.data!.data()! as Map<String, dynamic>;
+                              snapshot.data!.data() as Map<String, dynamic>;
                           print('Data of Firebase: $data');
                           return Text(data['username']);
                         },
@@ -92,7 +176,18 @@ class _ProfileState extends State<Profile> {
                     margin: EdgeInsets.only(top: height * .005),
                     child: Column(
                       mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                      children: [Text('Anket'), Text('$anket')],
+                      children: [
+                        const Text('Anket'),
+                        FutureBuilder(
+                            future: userSurveyServices.getSurveyList(),
+                            builder: (context, snapshot) {
+                              List<Map<String, dynamic>>? surveyList =
+                                  snapshot.data;
+                              return !snapshot.hasData
+                                  ? CircularProgressIndicator()
+                                  : Text('${surveyList!.length}');
+                            })
+                      ],
                     ),
                   ),
                   Container(
@@ -100,7 +195,7 @@ class _ProfileState extends State<Profile> {
                         top: height * .005, left: size.width * .03),
                     child: Column(
                       mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                      children: [Text('Cevap'), Text('$cevap')],
+                      children: [const Text('Cevap'), Text('$answerAmount')],
                     ),
                   ),
                 ],
@@ -123,54 +218,8 @@ class _ProfileState extends State<Profile> {
                   border: Border.all(
                       color: Colors.black, width: 2, style: BorderStyle.solid),
                   borderRadius: BorderRadius.circular(12)),
-              child: Scrollbar(
-                controller: _scrollController,
-                thumbVisibility: true,
-                child: ListView.builder(
-                    controller: _scrollController,
-                    shrinkWrap: true,
-                    itemCount: (_selectedIndex == 0) ? anket : cevap,
-                    itemBuilder: (BuildContext context, int index) {
-                      return Card(
-                        shape: RoundedRectangleBorder(
-                          side: BorderSide(
-                            color: Colors.black.withOpacity(.5),
-                          ),
-                          borderRadius:
-                              const BorderRadius.all(Radius.circular(5)),
-                        ),
-                        child: Padding(
-                          padding: EdgeInsets.only(
-                              left: size.width * .02361111066,
-                              top: height * .000001),
-                          child: InkWell(
-                            onTap: () {
-                              (_selectedIndex == 0)
-                                  ? Navigator.push(
-                                      context,
-                                      MaterialPageRoute(
-                                          builder: (context) => LoginPage()))
-                                  : Navigator.push(
-                                      context,
-                                      MaterialPageRoute(
-                                          builder: (context) =>
-                                              RegisterPage()));
-                            },
-                            child: Row(
-                              children: [
-                                SizedBox(
-                                  width: size.width * .9,
-                                  child:
-                                      _widgetOptions.elementAt(_selectedIndex),
-                                )
-                              ],
-                            ),
-                          ),
-                        ),
-                      );
-                    }),
-              ),
-            ),
+              child: _widgetOptions.elementAt(_selectedIndex),
+            )
           ],
         ),
       ),

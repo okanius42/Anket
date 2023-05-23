@@ -1,8 +1,10 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
-import 'package:survey/Services/Firestore_services.dart';
+import 'package:survey/pages/Survey/AnswerSurvey.dart';
 
 import '../../Drawer.dart';
+import '../../Services/FirestoreServices/answer_services.dart';
+import '../../Services/FirestoreServices/survey_services.dart';
 
 class Surveys extends StatefulWidget {
   const Surveys({Key? key}) : super(key: key);
@@ -12,8 +14,9 @@ class Surveys extends StatefulWidget {
 }
 
 class _SurveysState extends State<Surveys> {
-  final FirestoreService _firestoreService = FirestoreService();
   final ScrollController _scrollController = ScrollController();
+  final SurveyService _surveyService = SurveyService();
+  final AnswerService _answerService = AnswerService();
   @override
   Widget build(BuildContext context) {
     var size = MediaQuery.of(context).size;
@@ -39,7 +42,7 @@ class _SurveysState extends State<Surveys> {
                           style: BorderStyle.solid),
                       borderRadius: BorderRadius.circular(12)),
                   child: StreamBuilder(
-                    stream: _firestoreService.getSurvey(),
+                    stream: _surveyService.getAllSurvey(),
                     builder: (context, snapshot) {
                       return !snapshot.hasData
                           ? Center(
@@ -69,34 +72,45 @@ class _SurveysState extends State<Surveys> {
                                           Radius.circular(5)),
                                     ),
                                     child: Padding(
-                                      padding: EdgeInsets.only(
-                                          left: size.width * .02361111066,
-                                          top: height * .000001),
-                                      child: InkWell(
-                                        onTap: () {},
-                                        child: Row(
-                                          children: [
-                                            SizedBox(
-                                              width: size.width * .8,
-                                              height: height * .08,
-                                              child: Column(
-                                                crossAxisAlignment:
-                                                    CrossAxisAlignment.start,
-                                                children: [
-                                                  Text(
-                                                      'Topic:${survey["topic"]}'),
-                                                  SizedBox(
-                                                    height: height * .005,
-                                                  ),
-                                                  Text(
-                                                      'Explain:${survey["explain"]}'),
-                                                ],
-                                              ),
-                                            )
-                                          ],
-                                        ),
-                                      ),
-                                    ),
+                                        padding: EdgeInsets.only(
+                                            left: size.width * .02361111066,
+                                            top: height * .001),
+                                        child: InkWell(
+                                          onTap: () {
+                                            List list = survey["list"];
+                                            String a = list[1]["title"];
+                                            List myList = List.generate(
+                                                list.length,
+                                                (index) => {
+                                                      "title": list[index]
+                                                          ["title"],
+                                                      "value": false
+                                                    });
+                                            print(
+                                                'List of My list = $list to newList = $myList ');
+                                            Navigator.push(
+                                                context,
+                                                MaterialPageRoute(
+                                                    builder: (context) =>
+                                                        AnswerSurvey(
+                                                            isCheck:
+                                                                survey["Bool"],
+                                                            list: myList,
+                                                            surveyID:
+                                                                (index + 1))));
+                                          },
+                                          child: Column(
+                                            crossAxisAlignment:
+                                                CrossAxisAlignment.start,
+                                            children: [
+                                              Text(survey["Topic"]),
+                                              SizedBox(
+                                                  height: height * .04,
+                                                  child:
+                                                      Text(survey["Explain"]))
+                                            ],
+                                          ),
+                                        )),
                                   );
                                 },
                               ),
